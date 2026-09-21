@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>特殊花束配方追蹤器</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --line: #374151;
+      --ok: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --chip: #334155;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(1200px, 94vw);
+      margin: 20px auto;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 2fr 1fr;
+    }
+
+    @media (max-width: 980px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .card h1,
+    .card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .card-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .card-body { padding: 14px 16px; }
+
+    .muted { color: var(--muted); }
+
+    .toolbar {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr auto auto;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 760px) {
+      .toolbar { grid-template-columns: 1fr; }
+    }
+
+    input,
+    select,
+    button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    button { cursor: pointer; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      padding: 8px;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #0b1220;
+      z-index: 1;
+    }
+
+    .table-wrap {
+      max-height: 68vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .flowers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      background: var(--chip);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+    }
+
+    .status-done { color: var(--ok); }
+    .status-undone { color: var(--warn); }
+
+    .row-done { opacity: 0.66; }
+
+    .stats {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .danger { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="card">
+      <div class="card-header">
+        <h1>特殊花束配方追蹤器</h1>
+        <div class="muted">切換完成狀態後會即時更新「未完成花束」的花材需求，並自動儲存到瀏覽器。</div>
+      </div>
+      <div class="card-body">
+        <div class="toolbar">
+          <input id="searchInput" type="text" placeholder="搜尋花束名稱（例：虎斑搖籃）" />
+          <select id="statusFilter">
+            <option value="all">全部狀態</option>
+            <option value="incomplete">只看未完成</option>
+            <option value="completed">只看已完成</option>
+          </select>
+          <button id="resetBtn" type="button">重設完成狀態</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:58px;">ID</th>
+                <th style="min-width:130px;">花束</th>
+                <th style="width:64px;">稀有</th>
+                <th style="width:70px;">售價</th>
+                <th style="width:58px;">朵數</th>
+                <th style="min-width:230px;">花材</th>
+                <th style="min-width:180px;">描述</th>
+                <th style="width:96px;">狀態</th>
+              </tr>
+            </thead>
+            <tbody id="bouquetBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <div class="card-header">
+        <h2>未完成需求統計</h2>
+      </div>
+      <div class="card-body">
+        <div id="summary" class="stats"></div>
+        <div class="table-wrap" style="max-height:70vh;">
+          <table>
+            <thead>
+              <tr>
+                <th>花種</th>
+                <th style="width:80px;">數量</th>
+              </tr>
+            </thead>
+            <tbody id="needBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'special-bouquet-tracker.completed.v1';
+    const DEFAULT_COMPLETED_IDS = [39, 40];
+
+    const BOUQUETS = [
+      { id: 1, name: '晨曦花語', rarity: 1, price: 130, count: 3, flower1: '白雛菊', flower2: '白滿天星', flower3: '白滿天星', flower4: '', flower5: '', description: '晨光灑下來好溫柔' },
+      { id: 2, name: '月下私語', rarity: 1, price: 130, count: 3, flower1: '白雛菊', flower2: '白滿天星', flower3: '綠萼梅', flower4: '', flower5: '', description: '月色下最適合說秘密' },
+      { id: 3, name: '微風輕拂', rarity: 1, price: 130, count: 3, flower1: '黃雛菊', flower2: '白滿天星', flower3: '玉蝶梅', flower4: '', flower5: '', description: '有風經過就想跳開' },
+      { id: 4, name: '童話花園', rarity: 2, price: 260, count: 3, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '龍游梅', flower4: '', flower5: '', description: '花園裡好像住著小精靈' },
+      { id: 5, name: '楓紅信箋', rarity: 3, price: 494, count: 3, flower1: '白雛菊', flower2: '白滿天星', flower3: '黑魔術玫瑰', flower4: '', flower5: '', description: '秋天想寄一封信給你' },
+      { id: 6, name: '貓神的祝福', rarity: 4, price: 884, count: 3, flower1: '白雛菊', flower2: '白滿天星', flower3: '彩虹幻境玫瑰', flower4: '', flower5: '', description: '傳說湊齊 7 會被貓神眷顧' },
+      { id: 7, name: '春日暖陽', rarity: 1, price: 130, count: 3, flower1: '黃雛菊', flower2: '淺藍滿天星', flower3: '朱砂梅', flower4: '', flower5: '', description: '太陽暖暖的好想曬肚子' },
+      { id: 8, name: '星夜物語', rarity: 2, price: 260, count: 3, flower1: '白雛菊', flower2: '淺藍滿天星', flower3: '灑金梅', flower4: '', flower5: '', description: '數星星數到睡著了' },
+      { id: 9, name: '銀河漫步', rarity: 2, price: 260, count: 3, flower1: '白雛菊', flower2: '淺藍滿天星', flower3: '照水梅', flower4: '', flower5: '', description: '想在銀河裡散步路' },
+      { id: 10, name: '珍珠雨露', rarity: 3, price: 494, count: 3, flower1: '白雛菊', flower2: '淺藍滿天星', flower3: '黑魔術玫瑰', flower4: '', flower5: '', description: '露珠像珍珠一樣亮晶晶' },
+      { id: 11, name: '深夜癡戀', rarity: 4, price: 884, count: 3, flower1: '白雛菊', flower2: '淺藍滿天星', flower3: '彩虹幻境玫瑰', flower4: '', flower5: '', description: '半夜偷偷出門去打獵' },
+      { id: 12, name: '甜蜜時光', rarity: 2, price: 260, count: 3, flower1: '白雛菊', flower2: '胭脂紅滿天星', flower3: '灑金梅', flower4: '', flower5: '', description: '跟你在一起甜甜的' },
+      { id: 13, name: '霧中精靈', rarity: 3, price: 494, count: 3, flower1: '白雛菊', flower2: '薰衣紫滿天星', flower3: '照水梅', flower4: '', flower5: '', description: '霧裡好像有誰在看我' },
+      { id: 14, name: '流螢之光', rarity: 4, price: 884, count: 3, flower1: '黃雛菊', flower2: '薰衣紫滿天星', flower3: '黑魔術玫瑰', flower4: '', flower5: '', description: '螢火蟲一閃一閃好美' },
+      { id: 15, name: '紙箱祕境', rarity: 4, price: 884, count: 3, flower1: '白雛菊', flower2: '胭脂紅滿天星', flower3: '彩虹幻境玫瑰', flower4: '', flower5: '', description: '紙箱裡是我的祕密基地' },
+      { id: 16, name: '幸運草原', rarity: 3, price: 494, count: 3, flower1: '白雛菊', flower2: '薄荷綠滿天星', flower3: '龍游梅', flower4: '', flower5: '', description: '草原上滾來滾去好幸運' },
+      { id: 17, name: '貓語呢喃', rarity: 4, price: 884, count: 3, flower1: '白雛菊', flower2: '薄荷綠滿天星', flower3: '黑魔術玫瑰', flower4: '', flower5: '', description: '喵喵想跟你說悄悄話' },
+      { id: 18, name: '耀雀盛宴', rarity: 5, price: 1690, count: 3, flower1: '黃雛菊', flower2: '雙色星斑滿天星', flower3: '彩虹幻境玫瑰', flower4: '', flower5: '', description: '開雜燴的聲音最好聽' },
+      { id: 19, name: '呼嚕小調', rarity: 4, price: 884, count: 3, flower1: '白雛菊', flower2: '曜夜極黑薰衣草', flower3: '黑魔術玫瑰', flower4: '', flower5: '', description: '心情好就呼嚕呼嚕' },
+      { id: 20, name: '飛雀散步', rarity: 5, price: 1690, count: 3, flower1: '白雛菊', flower2: '曜夜極黑薰衣草', flower3: '彩虹幻境玫瑰', flower4: '', flower5: '', description: '在屋頂上散步好自由' },
+      { id: 21, name: '雨後彩虹', rarity: 1, price: 182, count: 4, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '原生淺紫薰衣草', flower4: '宮粉梅', flower5: '', description: '雨停了就會有彩虹' },
+      { id: 22, name: '午後小憩', rarity: 1, price: 182, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '白雪薰衣草', flower4: '綠萼梅', flower5: '', description: '午後最適合睡個回籠覺' },
+      { id: 23, name: '雪吻情書', rarity: 1, price: 182, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '白雪薰衣草', flower4: '香檳玫瑰', flower5: '', description: '下雪的地方想寫情書' },
+      { id: 24, name: '晚霞絮語', rarity: 1, price: 182, count: 4, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '杏桃黃薰衣草', flower4: '宮粉梅', flower5: '', description: '晚霞紅紅的好像棉花糖' },
+      { id: 25, name: '糖霜蛋糕', rarity: 2, price: 416, count: 4, flower1: '白雛菊', flower2: '淡粉滿天星', flower3: '白雪薰衣草', flower4: '黑魔術玫瑰', flower5: '', description: '蛋糕上的糖霜甜甜的' },
+      { id: 26, name: '薩孔星空', rarity: 3, price: 780, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '璀璨極光百合', flower5: '', description: '貓咪戰孔裡藏著星空' },
+      { id: 27, name: '金色年華', rarity: 1, price: 182, count: 4, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '微光粉薰衣草', flower4: '朱砂梅', flower5: '', description: '金黃色的日子最難忘' },
+      { id: 28, name: '紫醉花香', rarity: 1, price: 182, count: 4, flower1: '白雛菊', flower2: '淺藍滿天星', flower3: '原生淺紫薰衣草', flower4: '玉蝶梅', flower5: '', description: '聞到花香就醉醺醺的' },
+      { id: 29, name: '祝福鈴聲', rarity: 2, price: 416, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '甜蜜藍薰衣草', flower4: '橙黃玫瑰', flower5: '', description: '鈴鐺響起來就好開心' },
+      { id: 30, name: '天使羽翼', rarity: 2, price: 416, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '曜夜極黑薰衣草', flower4: '綠萼梅', flower5: '', description: '背上好像長出了翅膀' },
+      { id: 31, name: '逗貓棒狂想', rarity: 3, price: 780, count: 4, flower1: '黃雛菊', flower2: '淺藍滿天星', flower3: '原生淺紫薰衣草', flower4: '彩虹幻境玫瑰', flower5: '', description: '看到逗貓棒就控制不住' },
+      { id: 32, name: '蜜糖派對', rarity: 1, price: 182, count: 4, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '雙色斑紋薰衣草', flower4: '香檳玫瑰', flower5: '', description: '派對上的糖果吃不完' },
+      { id: 33, name: '奶油雲朵', rarity: 2, price: 416, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '杏桃黃薰衣草', flower4: '玉蝶梅', flower5: '', description: '雲朵看起來像奶油泡芙' },
+      { id: 34, name: '肉墊印記', rarity: 3, price: 780, count: 4, flower1: '白雛菊', flower2: '胭脂紅滿天星', flower3: '原生淺紫薰衣草', flower4: '黑魔術玫瑰', flower5: '', description: '粉紅肉墊按下去軟軟的' },
+      { id: 35, name: '慵懶午後', rarity: 3, price: 780, count: 4, flower1: '黃雛菊', flower2: '白滿天星', flower3: '英倫深紫薰衣草', flower4: '璀璨極光百合', flower5: '', description: '懶洋洋的午後想發呆' },
+      { id: 36, name: '海風之戀', rarity: 1, price: 260, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '白雪薰衣草', flower4: '白梅', flower5: '白玫瑰', description: '海風吹過來鹹鹹的' },
+      { id: 37, name: '琥珀之夢', rarity: 1, price: 260, count: 5, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '原生淺紫薰衣草', flower4: '朱砂梅', flower5: '紅玫瑰', description: '夢裡有一塊琥珀糖' },
+      { id: 38, name: '緋色圓舞', rarity: 1, price: 260, count: 5, flower1: '白雛菊', flower2: '淡粉滿天星', flower3: '原生淺紫薰衣草', flower4: '宮粉梅', flower5: '香水姬百合', description: '穿上紅裙子跳支舞' },
+      { id: 39, name: '奶貓搖鈴', rarity: 1, price: 260, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '白雪薰衣草', flower4: '白梅', flower5: '橙黃玫瑰', description: '小奶貓搖著鈴鐺跑' },
+      { id: 40, name: '虎斑搖籃', rarity: 2, price: 598, count: 5, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '原生淺紫薰衣草', flower4: '紫葉紅梅', flower5: '紅玫瑰', description: '虎斑貓在搖籃裡打呼' },
+      { id: 41, name: '蝴蝶結禮讚', rarity: 2, price: 598, count: 5, flower1: '白雛菊', flower2: '淡粉滿天星', flower3: '原生淺紫薰衣草', flower4: '宮粉梅', flower5: '皇家金絲墨鬱金香', description: '繫上蝴蝶結變得好神氣' },
+      { id: 42, name: '青空之詩', rarity: 1, price: 260, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '甜蜜藍薰衣草', flower4: '白梅', flower5: '粉紅玫瑰', description: '藍藍的天空好想飛' },
+      { id: 43, name: '玫瑰騎士', rarity: 1, price: 260, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '灑金梅', flower5: '粉紅玫瑰', description: '玫瑰騎士來保護你' },
+      { id: 44, name: '闖蕩飯匠', rarity: 1, price: 260, count: 5, flower1: '黃雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '綠萼梅', flower5: '虎斑雙色百合', description: '闖蕩被風吹得癢癢的' },
+      { id: 45, name: '毛球慶典', rarity: 2, price: 598, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '微光粉薰衣草', flower4: '白梅', flower5: '幽藍幻影百合', description: '滿地都是滾來滾去毛球' },
+      { id: 46, name: '路路節奏', rarity: 3, price: 1144, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '琥珀冰晶梅', flower5: '粉紅玫瑰', description: '路路踏出小情聲超好' },
+      { id: 47, name: '寶石盒子', rarity: 1, price: 260, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '灑金梅', flower5: '香檳金百合', description: '盒子裡裝滿亮晶晶寶石' },
+      { id: 48, name: '窗台日光浴', rarity: 1, price: 260, count: 5, flower1: '黃雛菊', flower2: '白滿天星', flower3: '英倫深紫薰衣草', flower4: '白梅', flower5: '橙黃玫瑰', description: '窗邊曬太陽好幸福' },
+      { id: 49, name: '尾巴圓舞曲', rarity: 2, price: 598, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '紫葉紅梅', flower5: '紫玫瑰', description: '尾巴搖來搖去跳圓舞' },
+      { id: 50, name: '貓草花田', rarity: 3, price: 1144, count: 5, flower1: '黃雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '玉蝶梅', flower5: '皇家金絲墨鬱金香', description: '貓草田裡打滾好開心' }
+    ];
+
+    const bouquetBody = document.getElementById('bouquetBody');
+    const needBody = document.getElementById('needBody');
+    const summaryEl = document.getElementById('summary');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let keyword = '';
+    let filterStatus = 'all';
+
+    function buildDefaultState() {
+      const base = {};
+      DEFAULT_COMPLETED_IDS.forEach((id) => { base[id] = true; });
+      return base;
+    }
+
+    function loadState() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return { ...buildDefaultState(), ...parsed };
+      } catch (error) {
+        return buildDefaultState();
+      }
+    }
+
+    let completedMap = loadState();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(completedMap));
+    }
+
+    function flowersOf(bouquet) {
+      return [bouquet.flower1, bouquet.flower2, bouquet.flower3, bouquet.flower4, bouquet.flower5].filter(Boolean);
+    }
+
+    function filteredBouquets() {
+      return BOUQUETS.filter((b) => {
+        const done = !!completedMap[b.id];
+        if (filterStatus === 'completed' && !done) return false;
+        if (filterStatus === 'incomplete' && done) return false;
+        if (!keyword) return true;
+        return b.name.includes(keyword);
+      });
+    }
+
+    function toggleDone(id) {
+      completedMap[id] = !completedMap[id];
+      saveState();
+      render();
+    }
+
+    function renderTable() {
+      const rows = filteredBouquets().map((b) => {
+        const done = !!completedMap[b.id];
+        const flowers = flowersOf(b).map((f) => `<span class="chip">${f}</span>`).join('');
+        return `
+          <tr class="${done ? 'row-done' : ''}">
+            <td>${b.id}</td>
+            <td><strong>${b.name}</strong></td>
+            <td>★${b.rarity}</td>
+            <td>${b.price}</td>
+            <td>${b.count}</td>
+            <td><div class="flowers">${flowers}</div></td>
+            <td>${b.description}</td>
+            <td>
+              <button type="button" data-id="${b.id}" class="toggle-btn ${done ? 'status-done' : 'status-undone'}">
+                ${done ? '已完成' : '未完成'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      bouquetBody.innerHTML = rows || '<tr><td colspan="8" class="muted">沒有符合條件的花束</td></tr>';
+      document.querySelectorAll('.toggle-btn').forEach((btn) => {
+        btn.addEventListener('click', () => toggleDone(Number(btn.dataset.id)));
+      });
+    }
+
+    function renderNeedSummary() {
+      const needMap = {};
+      let completedCount = 0;
+
+      BOUQUETS.forEach((b) => {
+        if (completedMap[b.id]) {
+          completedCount += 1;
+          return;
+        }
+        flowersOf(b).forEach((flower) => {
+          needMap[flower] = (needMap[flower] || 0) + 1;
+        });
+      });
+
+      const total = BOUQUETS.length;
+      const incomplete = total - completedCount;
+      const sortedNeeds = Object.entries(needMap).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-Hant'));
+      const totalFlowerCount = sortedNeeds.reduce((sum, [, qty]) => sum + qty, 0);
+
+      summaryEl.innerHTML = `
+        <div>總花束：<strong>${total}</strong></div>
+        <div class="status-done">已完成：<strong>${completedCount}</strong></div>
+        <div class="status-undone">未完成：<strong>${incomplete}</strong></div>
+        <div>未完成花材總數：<strong>${totalFlowerCount}</strong></div>
+        <div class="muted">預設已完成含紅底示例：虎斑搖籃、奶貓搖鈴</div>
+      `;
+
+      needBody.innerHTML = sortedNeeds.map(([flower, qty]) => `
+        <tr><td>${flower}</td><td>${qty}</td></tr>
+      `).join('') || '<tr><td colspan="2" class="status-done">全部完成 🎉</td></tr>';
+    }
+
+    function render() {
+      renderTable();
+      renderNeedSummary();
+    }
+
+    searchInput.addEventListener('input', (event) => {
+      keyword = event.target.value.trim();
+      renderTable();
+    });
+
+    statusFilter.addEventListener('change', (event) => {
+      filterStatus = event.target.value;
+      renderTable();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if (!window.confirm('確定要重設所有完成狀態嗎？')) return;
+      completedMap = buildDefaultState();
+      saveState();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
