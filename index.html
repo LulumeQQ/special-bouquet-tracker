@@ -17,7 +17,7 @@
         <h1>🌸 特殊花束配方管理</h1>
         <div class="subtitle">追蹤已完成 / 未完成花束，並自動統計還缺哪些花種與數量</div>
       </div>
-      <div class="badge-mini">已預設完成：虎斑搖籃、奶貓搖鈴</div>
+      <div class="badge-mini">已預設完成：你指定的已完成花束</div>
     </div>
 
     <div class="layout">
@@ -69,11 +69,26 @@
   <script>
     const STORAGE_KEY = 'special-bouquet-tracker-v2';
 
-    // 這裡集中管理「圖片中已完成」的預設花束名稱
     const defaultCompletedNames = new Set([
+      '晨曦花語',
+      '月下私語',
+      '童話花園',
+      '春日暖陽',
+      '星夜物語',
+      '銀河漫步',
+      '甜蜜時光',
+      '幸運草原',
+      '雨後彩虹',
+      '午後小憩',
+      '雪國情書',
+      '金色年華',
+      '祝福鈴聲',
+      '天使羽翼',
+      '海風之戀',
+      '琥珀之夢',
+      '緋色圓舞',
       '奶貓搖鈴',
-      '虎斑搖籃',
-      // 如果你之後確認還有其他粉底/紅底已完成花束，直接加在這裡
+      '虎斑搖籃'
     ]);
 
     const bouquets = [
@@ -99,7 +114,7 @@
       { id: 20, name: '飛雀散步', rarity: 5, count: 3, flowers: ['白雛菊','曜夜極黑薰衣草','彩虹幻境玫瑰'] },
       { id: 21, name: '雨後彩虹', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅'] },
       { id: 22, name: '午後小憩', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','綠萼梅'] },
-      { id: 23, name: '雪吻情書', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','香檳玫瑰'] },
+      { id: 23, name: '雪國情書', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','香檳玫瑰'] },
       { id: 24, name: '晚霞絮語', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','杏桃黃薰衣草','宮粉梅'] },
       { id: 25, name: '糖霜蛋糕', rarity: 2, count: 4, flowers: ['白雛菊','淡粉滿天星','白雪薰衣草','黑魔術玫瑰'] },
       { id: 26, name: '薩孔星空', rarity: 3, count: 4, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','璀璨極光百合'] },
@@ -127,18 +142,13 @@
       { id: 48, name: '窗台日光浴', rarity: 1, count: 5, flowers: ['黃雛菊','白滿天星','英倫深紫薰衣草','白梅','橙黃玫瑰'] },
       { id: 49, name: '尾巴圓舞曲', rarity: 2, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','紫葉紅梅','紫玫瑰'] },
       { id: 50, name: '貓草花田', rarity: 3, count: 5, flowers: ['黃雛菊','白滿天星','原生淺紫薰衣草','玉蝶梅','皇家金絲墨鬱金香'] }
-    ].map(item => ({
-      ...item,
-      completed: defaultCompletedNames.has(item.name)
-    }));
+    ].map(item => ({ ...item, completed: defaultCompletedNames.has(item.name) }));
 
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     const doneMap = {};
     bouquets.forEach(item => {
       const key = String(item.id);
-      doneMap[key] = Object.prototype.hasOwnProperty.call(saved, key)
-        ? !!saved[key]
-        : !!item.completed;
+      doneMap[key] = Object.prototype.hasOwnProperty.call(saved, key) ? !!saved[key] : !!item.completed;
     });
 
     const tbody = document.getElementById('tbody');
@@ -149,106 +159,11 @@
     const searchInput = document.getElementById('searchInput');
     let currentFilter = 'all';
 
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(doneMap));
-    }
-
-    function getFiltered() {
-      const q = searchInput.value.trim().toLowerCase();
-      return bouquets.filter(item => {
-        const matchText = !q || item.name.toLowerCase().includes(q);
-        const matchDone =
-          currentFilter === 'all' ||
-          (currentFilter === 'done' && doneMap[item.id]) ||
-          (currentFilter === 'active' && !doneMap[item.id]);
-        return matchText && matchDone;
-      });
-    }
-
-    function calcNeed() {
-      const needMap = {};
-      let done = 0;
-
-      bouquets.forEach(item => {
-        if (doneMap[item.id]) {
-          done++;
-          return;
-        }
-        item.flowers.forEach(f => {
-          needMap[f] = (needMap[f] || 0) + 1;
-        });
-      });
-
-      return {
-        done,
-        remain: bouquets.length - done,
-        entries: Object.entries(needMap).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-Hant'))
-      };
-    }
-
-    function render() {
-      const filtered = getFiltered();
-      const rows = filtered.map(item => {
-        const done = !!doneMap[item.id];
-        return `
-          <tr class="${done ? 'done-row' : ''}">
-            <td>${item.id}</td>
-            <td>${item.name}</td>
-            <td><span class="badge rarity-${item.rarity}">★ ${item.rarity}</span></td>
-            <td>
-              <div class="flower-tags">${item.flowers.map(f => `<span class="tag">${f}</span>`).join('')}</div>
-            </td>
-            <td>
-              <button class="toggle-btn ${done ? 'done' : ''}" data-id="${item.id}">
-                ${done ? '已完成 ✅' : '未完成 ⏳'}
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      tbody.innerHTML = rows || `<tr><td colspan="5" style="padding:20px; text-align:center;color:var(--muted);">沒有符合條件的花束</td></tr>`;
-
-      document.querySelectorAll('.toggle-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = Number(btn.dataset.id);
-          doneMap[id] = !doneMap[id];
-          saveState();
-          render();
-        });
-      });
-
-      const { done, remain, entries } = calcNeed();
-      totalCount.textContent = String(bouquets.length);
-      doneCountEl.textContent = String(done);
-      remainCountEl.textContent = String(remain);
-
-      if (entries.length === 0) {
-        needBody.innerHTML = `<tr><td colspan="2" class="empty">全部完成！</td></tr>`;
-      } else {
-        needBody.innerHTML = entries.map(([name, count]) => `
-          <tr>
-            <td>${name}</td>
-            <td>${count}</td>
-          </tr>
-        `).join('');
-      }
-    }
-
-    searchInput.addEventListener('input', render);
-
-    document.querySelectorAll('[data-filter]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentFilter = btn.dataset.filter;
-        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('ghost'));
-        document.querySelectorAll('[data-filter]').forEach(b => {
-          if (b.dataset.filter !== currentFilter) b.classList.add('ghost');
-        });
-        render();
-      });
-    });
-
-    render();
+    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(doneMap)); }
+    function getFiltered() { const q = searchInput.value.trim().toLowerCase(); return bouquets.filter(item => { const matchText = !q || item.name.toLowerCase().includes(q); const matchDone = currentFilter === 'all' || (currentFilter === 'done' && doneMap[item.id]) || (currentFilter === 'active' && !doneMap[item.id]); return matchText && matchDone; }); }
+    function calcNeed() { const needMap = {}; let done = 0; bouquets.forEach(item => { if (doneMap[item.id]) { done++; return; } item.flowers.forEach(f => { needMap[f] = (needMap[f] || 0) + 1; }); }); return { done, remain: bouquets.length - done, entries: Object.entries(needMap).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-Hant')) }; }
+    function render() { const filtered = getFiltered(); const rows = filtered.map(item => { const done = !!doneMap[item.id]; return `<tr class="${done ? 'done-row' : ''}"><td>${item.id}</td><td>${item.name}</td><td><span class="badge rarity-${item.rarity}">★ ${item.rarity}</span></td><td><div class="flower-tags">${item.flowers.map(f => `<span class="tag">${f}</span>`).join('')}</div></td><td><button class="toggle-btn ${done ? 'done' : ''}" data-id="${item.id}">${done ? '已完成 ✅' : '未完成 ⏳'}</button></td></tr>`; }).join(''); tbody.innerHTML = rows || `<tr><td colspan="5" style="padding:20px; text-align:center;color:var(--muted);">沒有符合條件的花束</td></tr>`; document.querySelectorAll('.toggle-btn').forEach(btn => { btn.addEventListener('click', () => { const id = Number(btn.dataset.id); doneMap[id] = !doneMap[id]; saveState(); render(); }); }); const { done, remain, entries } = calcNeed(); totalCount.textContent = String(bouquets.length); doneCountEl.textContent = String(done); remainCountEl.textContent = String(remain); needBody.innerHTML = entries.length === 0 ? `<tr><td colspan="2" class="empty">全部完成！</td></tr>` : entries.map(([name, count]) => `<tr><td>${name}</td><td>${count}</td></tr>`).join(''); }
+    searchInput.addEventListener('input', render); document.querySelectorAll('[data-filter]').forEach(btn => { btn.addEventListener('click', () => { currentFilter = btn.dataset.filter; document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('ghost')); document.querySelectorAll('[data-filter]').forEach(b => { if (b.dataset.filter !== currentFilter) b.classList.add('ghost'); }); render(); }); }); render();
   </script>
 </body>
 </html>
