@@ -266,6 +266,10 @@
 
     let keyword = '';
     let filterStatus = 'all';
+    const defaultCompletedNames = DEFAULT_COMPLETED_IDS
+      .map((id) => BOUQUETS.find((b) => b.id === id)?.name)
+      .filter(Boolean)
+      .join('、');
 
     function buildDefaultState() {
       const base = {};
@@ -367,7 +371,7 @@
         <div class="status-done">已完成：<strong>${completedCount}</strong></div>
         <div class="status-undone">未完成：<strong>${incomplete}</strong></div>
         <div>未完成花材總數：<strong>${totalFlowerCount}</strong></div>
-        <div class="muted">預設已完成示例：虎斑搖籃、奶貓搖鈴</div>
+        <div class="muted">預設已完成示例：${escapeHtml(defaultCompletedNames)}</div>
       `;
 
       needBody.innerHTML = sortedNeeds.map(([flower, qty]) => `
