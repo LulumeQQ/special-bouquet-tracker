@@ -230,7 +230,7 @@
       { id: 23, name: '雪吻情書', rarity: 1, price: 182, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '白雪薰衣草', flower4: '香檳玫瑰', flower5: '', description: '下雪的地方想寫情書' },
       { id: 24, name: '晚霞絮語', rarity: 1, price: 182, count: 4, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '杏桃黃薰衣草', flower4: '宮粉梅', flower5: '', description: '晚霞紅紅的好像棉花糖' },
       { id: 25, name: '糖霜蛋糕', rarity: 2, price: 416, count: 4, flower1: '白雛菊', flower2: '淡粉滿天星', flower3: '白雪薰衣草', flower4: '黑魔術玫瑰', flower5: '', description: '蛋糕上的糖霜甜甜的' },
-      { id: 26, name: '薩孔星空', rarity: 3, price: 780, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '璀璨極光百合', flower5: '', description: '貓咪戰孔裡藏著星空' },
+      { id: 26, name: '薩孔星空', rarity: 3, price: 780, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '璀璨極光百合', flower5: '', description: '貓咪瞳孔裡藏著星空' },
       { id: 27, name: '金色年華', rarity: 1, price: 182, count: 4, flower1: '黃雛菊', flower2: '淡粉滿天星', flower3: '微光粉薰衣草', flower4: '朱砂梅', flower5: '', description: '金黃色的日子最難忘' },
       { id: 28, name: '紫醉花香', rarity: 1, price: 182, count: 4, flower1: '白雛菊', flower2: '淺藍滿天星', flower3: '原生淺紫薰衣草', flower4: '玉蝶梅', flower5: '', description: '聞到花香就醉醺醺的' },
       { id: 29, name: '祝福鈴聲', rarity: 2, price: 416, count: 4, flower1: '白雛菊', flower2: '白滿天星', flower3: '甜蜜藍薰衣草', flower4: '橙黃玫瑰', flower5: '', description: '鈴鐺響起來就好開心' },
@@ -250,7 +250,7 @@
       { id: 43, name: '玫瑰騎士', rarity: 1, price: 260, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '灑金梅', flower5: '粉紅玫瑰', description: '玫瑰騎士來保護你' },
       { id: 44, name: '闖蕩飯匠', rarity: 1, price: 260, count: 5, flower1: '黃雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '綠萼梅', flower5: '虎斑雙色百合', description: '闖蕩被風吹得癢癢的' },
       { id: 45, name: '毛球慶典', rarity: 2, price: 598, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '微光粉薰衣草', flower4: '白梅', flower5: '幽藍幻影百合', description: '滿地都是滾來滾去毛球' },
-      { id: 46, name: '路路節奏', rarity: 3, price: 1144, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '琥珀冰晶梅', flower5: '粉紅玫瑰', description: '路路踏出小情聲超好' },
+      { id: 46, name: '路路節奏', rarity: 3, price: 1144, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '琥珀冰晶梅', flower5: '粉紅玫瑰', description: '路路踏出小節奏聲超好' },
       { id: 47, name: '寶石盒子', rarity: 1, price: 260, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '灑金梅', flower5: '香檳金百合', description: '盒子裡裝滿亮晶晶寶石' },
       { id: 48, name: '窗台日光浴', rarity: 1, price: 260, count: 5, flower1: '黃雛菊', flower2: '白滿天星', flower3: '英倫深紫薰衣草', flower4: '白梅', flower5: '橙黃玫瑰', description: '窗邊曬太陽好幸福' },
       { id: 49, name: '尾巴圓舞曲', rarity: 2, price: 598, count: 5, flower1: '白雛菊', flower2: '白滿天星', flower3: '原生淺紫薰衣草', flower4: '紫葉紅梅', flower5: '紫玫瑰', description: '尾巴搖來搖去跳圓舞' },
@@ -292,6 +292,15 @@
       return [bouquet.flower1, bouquet.flower2, bouquet.flower3, bouquet.flower4, bouquet.flower5].filter(Boolean);
     }
 
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function filteredBouquets() {
       return BOUQUETS.filter((b) => {
         const done = !!completedMap[b.id];
@@ -311,16 +320,16 @@
     function renderTable() {
       const rows = filteredBouquets().map((b) => {
         const done = !!completedMap[b.id];
-        const flowers = flowersOf(b).map((f) => `<span class="chip">${f}</span>`).join('');
+        const flowers = flowersOf(b).map((f) => `<span class="chip">${escapeHtml(f)}</span>`).join('');
         return `
           <tr class="${done ? 'row-done' : ''}">
             <td>${b.id}</td>
-            <td><strong>${b.name}</strong></td>
+            <td><strong>${escapeHtml(b.name)}</strong></td>
             <td>★${b.rarity}</td>
             <td>${b.price}</td>
             <td>${b.count}</td>
             <td><div class="flowers">${flowers}</div></td>
-            <td>${b.description}</td>
+            <td>${escapeHtml(b.description)}</td>
             <td>
               <button type="button" data-id="${b.id}" class="toggle-btn ${done ? 'status-done' : 'status-undone'}">
                 ${done ? '已完成' : '未完成'}
@@ -364,7 +373,7 @@
       `;
 
       needBody.innerHTML = sortedNeeds.map(([flower, qty]) => `
-        <tr><td>${flower}</td><td>${qty}</td></tr>
+        <tr><td>${escapeHtml(flower)}</td><td>${qty}</td></tr>
       `).join('') || '<tr><td colspan="2" class="status-done">全部完成 🎉</td></tr>';
     }
 
