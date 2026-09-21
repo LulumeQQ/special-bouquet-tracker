@@ -4,7 +4,7 @@ Single-page web app for tracking special bouquet recipes.
 
 ## Run locally
 
-Open `/home/runner/work/special-bouquet-tracker/special-bouquet-tracker/index.html` in a browser.
+Open `index.html` in a browser.
 
 ## Features
 
