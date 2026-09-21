@@ -33,7 +33,15 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th style="width:70px;">編號</th><th style="width:185px;">花束名稱</th><th style="width:90px;">稀有度</th><th>配方</th><th style="width:120px;">狀態</th></tr></thead>
+            <thead>
+              <tr>
+                <th style="width:70px;">編號</th>
+                <th style="width:185px;">花束名稱</th>
+                <th style="width:90px;">稀有度</th>
+                <th>配方</th>
+                <th style="width:120px;">狀態</th>
+              </tr>
+            </thead>
             <tbody id="tbody"></tbody>
           </table>
         </div>
@@ -48,7 +56,10 @@
         <div class="need-panel">
           <strong>未完成花束總需求</strong>
           <div class="need-table">
-            <table><thead><tr><th>花種</th><th style="width:80px;">數量</th></tr></thead><tbody id="needBody"></tbody></table>
+            <table>
+              <thead><tr><th>花種</th><th style="width:80px;">數量</th></tr></thead>
+              <tbody id="needBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -56,68 +67,188 @@
   </div>
 
   <script>
-    const STORAGE_KEY='special-bouquet-tracker-v2';
-    const bouquets=[
-      { id: 1, name: '晨曦花語', rarity: 1, count: 3, flowers: ['白雛菊','白滿天星','白滿天星'], completed: false },
-      { id: 2, name: '月下私語', rarity: 1, count: 3, flowers: ['白雛菊','白滿天星','綠萼梅'], completed: false },
-      { id: 3, name: '微風輕拂', rarity: 1, count: 3, flowers: ['黃雛菊','白滿天星','玉蝶梅'], completed: false },
-      { id: 4, name: '童話花園', rarity: 2, count: 3, flowers: ['黃雛菊','淡粉滿天星','龍游梅'], completed: false },
-      { id: 5, name: '楓紅信箋', rarity: 3, count: 3, flowers: ['白雛菊','白滿天星','黑魔術玫瑰'], completed: false },
-      { id: 6, name: '貓神的祝福', rarity: 4, count: 3, flowers: ['白雛菊','白滿天星','彩虹幻境玫瑰'], completed: false },
-      { id: 7, name: '春日暖陽', rarity: 1, count: 3, flowers: ['黃雛菊','淺藍滿天星','朱砂梅'], completed: false },
-      { id: 8, name: '星夜物語', rarity: 2, count: 3, flowers: ['白雛菊','淺藍滿天星','灑金梅'], completed: false },
-      { id: 9, name: '銀河漫步', rarity: 2, count: 3, flowers: ['白雛菊','淺藍滿天星','照水梅'], completed: false },
-      { id: 10, name: '珍珠雨露', rarity: 3, count: 3, flowers: ['白雛菊','淺藍滿天星','黑魔術玫瑰'], completed: false },
-      { id: 11, name: '深夜癡戀', rarity: 4, count: 3, flowers: ['白雛菊','淺藍滿天星','彩虹幻境玫瑰'], completed: false },
-      { id: 12, name: '甜蜜時光', rarity: 2, count: 3, flowers: ['白雛菊','胭脂紅滿天星','灑金梅'], completed: false },
-      { id: 13, name: '霧中精靈', rarity: 3, count: 3, flowers: ['白雛菊','薰衣紫滿天星','照水梅'], completed: false },
-      { id: 14, name: '流螢之光', rarity: 4, count: 3, flowers: ['黃雛菊','薰衣紫滿天星','黑魔術玫瑰'], completed: false },
-      { id: 15, name: '紙箱祕境', rarity: 4, count: 3, flowers: ['白雛菊','胭脂紅滿天星','彩虹幻境玫瑰'], completed: false },
-      { id: 16, name: '幸運草原', rarity: 3, count: 3, flowers: ['白雛菊','薄荷綠滿天星','龍游梅'], completed: false },
-      { id: 17, name: '貓語呢喃', rarity: 4, count: 3, flowers: ['白雛菊','薄荷綠滿天星','黑魔術玫瑰'], completed: false },
-      { id: 18, name: '耀雀盛宴', rarity: 5, count: 3, flowers: ['黃雛菊','雙色星斑滿天星','彩虹幻境玫瑰'], completed: false },
-      { id: 19, name: '呼嚕小調', rarity: 4, count: 3, flowers: ['白雛菊','曜夜極黑薰衣草','黑魔術玫瑰'], completed: false },
-      { id: 20, name: '飛雀散步', rarity: 5, count: 3, flowers: ['白雛菊','曜夜極黑薰衣草','彩虹幻境玫瑰'], completed: false },
-      { id: 21, name: '雨後彩虹', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅'], completed: false },
-      { id: 22, name: '午後小憩', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','綠萼梅'], completed: false },
-      { id: 23, name: '雪吻情書', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','香檳玫瑰'], completed: false },
-      { id: 24, name: '晚霞絮語', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','杏桃黃薰衣草','宮粉梅'], completed: false },
-      { id: 25, name: '糖霜蛋糕', rarity: 2, count: 4, flowers: ['白雛菊','淡粉滿天星','白雪薰衣草','黑魔術玫瑰'], completed: false },
-      { id: 26, name: '薩孔星空', rarity: 3, count: 4, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','璀璨極光百合'], completed: false },
-      { id: 27, name: '金色年華', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','微光粉薰衣草','朱砂梅'], completed: false },
-      { id: 28, name: '紫醉花香', rarity: 1, count: 4, flowers: ['白雛菊','淺藍滿天星','原生淺紫薰衣草','玉蝶梅'], completed: false },
-      { id: 29, name: '祝福鈴聲', rarity: 2, count: 4, flowers: ['白雛菊','白滿天星','甜蜜藍薰衣草','橙黃玫瑰'], completed: false },
-      { id: 30, name: '天使羽翼', rarity: 2, count: 4, flowers: ['白雛菊','白滿天星','曜夜極黑薰衣草','綠萼梅'], completed: false },
-      { id: 31, name: '逗貓棒狂想', rarity: 3, count: 4, flowers: ['黃雛菊','淺藍滿天星','原生淺紫薰衣草','彩虹幻境玫瑰'], completed: false },
-      { id: 32, name: '蜜糖派對', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','雙色斑紋薰衣草','香檳玫瑰'], completed: false },
-      { id: 33, name: '奶油雲朵', rarity: 2, count: 4, flowers: ['白雛菊','白滿天星','杏桃黃薰衣草','玉蝶梅'], completed: false },
-      { id: 34, name: '肉墊印記', rarity: 3, count: 4, flowers: ['白雛菊','胭脂紅滿天星','原生淺紫薰衣草','黑魔術玫瑰'], completed: false },
-      { id: 35, name: '慵懶午後', rarity: 3, count: 4, flowers: ['黃雛菊','白滿天星','英倫深紫薰衣草','璀璨極光百合'], completed: false },
-      { id: 36, name: '海風之戀', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','白雪薰衣草','白梅','白玫瑰'], completed: false },
-      { id: 37, name: '琥珀之夢', rarity: 1, count: 5, flowers: ['黃雛菊','淡粉滿天星','原生淺紫薰衣草','朱砂梅','紅玫瑰'], completed: false },
-      { id: 38, name: '緋色圓舞', rarity: 1, count: 5, flowers: ['白雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅','香水姬百合'], completed: false },
-      { id: 39, name: '奶貓搖鈴', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','白雪薰衣草','白梅','橙黃玫瑰'], completed: true },
-      { id: 40, name: '虎斑搖籃', rarity: 2, count: 5, flowers: ['黃雛菊','淡粉滿天星','原生淺紫薰衣草','紫葉紅梅','紅玫瑰'], completed: true },
-      { id: 41, name: '蝴蝶結禮讚', rarity: 2, count: 5, flowers: ['白雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅','皇家金絲墨鬱金香'], completed: false },
-      { id: 42, name: '青空之詩', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','甜蜜藍薰衣草','白梅','粉紅玫瑰'], completed: false },
-      { id: 43, name: '玫瑰騎士', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','灑金梅','粉紅玫瑰'], completed: false },
-      { id: 44, name: '闖蕩飯匠', rarity: 1, count: 5, flowers: ['黃雛菊','白滿天星','原生淺紫薰衣草','綠萼梅','虎斑雙色百合'], completed: false },
-      { id: 45, name: '毛球慶典', rarity: 2, count: 5, flowers: ['白雛菊','白滿天星','微光粉薰衣草','白梅','幽藍幻影百合'], completed: false },
-      { id: 46, name: '路路節奏', rarity: 3, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','琥珀冰晶梅','粉紅玫瑰'], completed: false },
-      { id: 47, name: '寶石盒子', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','灑金梅','香檳金百合'], completed: false },
-      { id: 48, name: '窗台日光浴', rarity: 1, count: 5, flowers: ['黃雛菊','白滿天星','英倫深紫薰衣草','白梅','橙黃玫瑰'], completed: false },
-      { id: 49, name: '尾巴圓舞曲', rarity: 2, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','紫葉紅梅','紫玫瑰'], completed: false },
-      { id: 50, name: '貓草花田', rarity: 3, count: 5, flowers: ['黃雛菊','白滿天星','原生淺紫薰衣草','玉蝶梅','皇家金絲墨鬱金香'], completed: false }
-    ];
+    const STORAGE_KEY = 'special-bouquet-tracker-v2';
 
-    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
-    const doneMap={}; bouquets.forEach(item=>{ const key=String(item.id); doneMap[key]=Object.prototype.hasOwnProperty.call(saved,key)?!!saved[key]:!!item.completed; });
-    const tbody=document.getElementById('tbody'); const needBody=document.getElementById('needBody'); const totalCount=document.getElementById('totalCount'); const doneCountEl=document.getElementById('doneCount'); const remainCountEl=document.getElementById('remainCount'); const searchInput=document.getElementById('searchInput'); let currentFilter='all';
-    function saveState(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(doneMap)); }
-    function getFiltered(){ const q=searchInput.value.trim().toLowerCase(); return bouquets.filter(item=>{ const matchText=!q||item.name.toLowerCase().includes(q); const matchDone=currentFilter==='all'||(currentFilter==='done'&&doneMap[item.id])||(currentFilter==='active'&&!doneMap[item.id]); return matchText&&matchDone; }); }
-    function calcNeed(){ const needMap={}; let done=0; bouquets.forEach(item=>{ if(doneMap[item.id]){ done++; return; } item.flowers.forEach(f=>{ needMap[f]=(needMap[f]||0)+1; }); }); return { done, remain: bouquets.length-done, entries:Object.entries(needMap).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'zh-Hant')) }; }
-    function render(){ const filtered=getFiltered(); const rows=filtered.map(item=>{ const done=!!doneMap[item.id]; return `<tr class="${done?'done-row':''}"><td>${item.id}</td><td>${item.name}</td><td><span class="badge rarity-${item.rarity}">★ ${item.rarity}</span></td><td><div class="flower-tags">${item.flowers.map(f=>`<span class="tag">${f}</span>`).join('')}</div></td><td><button class="toggle-btn ${done?'done':''}" data-id="${item.id}">${done?'已完成 ✅':'未完成 ⏳'}</button></td></tr>`; }).join(''); tbody.innerHTML=rows||`<tr><td colspan="5" style="padding:20px; text-align:center;color:var(--muted);">沒有符合條件的花束</td></tr>`; document.querySelectorAll('.toggle-btn').forEach(btn=>{ btn.addEventListener('click',()=>{ const id=Number(btn.dataset.id); doneMap[id]=!doneMap[id]; saveState(); render(); }); }); const {done,remain,entries}=calcNeed(); totalCount.textContent=String(bouquets.length); doneCountEl.textContent=String(done); remainCountEl.textContent=String(remain); needBody.innerHTML=entries.length===0?`<tr><td colspan="2" class="empty">全部完成！</td></tr>`:entries.map(([name,count])=>`<tr><td>${name}</td><td>${count}</td></tr>`).join(''); }
-    searchInput.addEventListener('input',render); document.querySelectorAll('[data-filter]').forEach(btn=>{ btn.addEventListener('click',()=>{ currentFilter=btn.dataset.filter; document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('ghost')); document.querySelectorAll('[data-filter]').forEach(b=>{ if(b.dataset.filter!==currentFilter) b.classList.add('ghost'); }); render(); }); }); render();
+    // 這裡集中管理「圖片中已完成」的預設花束名稱
+    const defaultCompletedNames = new Set([
+      '奶貓搖鈴',
+      '虎斑搖籃',
+      // 如果你之後確認還有其他粉底/紅底已完成花束，直接加在這裡
+    ]);
+
+    const bouquets = [
+      { id: 1, name: '晨曦花語', rarity: 1, count: 3, flowers: ['白雛菊','白滿天星','白滿天星'] },
+      { id: 2, name: '月下私語', rarity: 1, count: 3, flowers: ['白雛菊','白滿天星','綠萼梅'] },
+      { id: 3, name: '微風輕拂', rarity: 1, count: 3, flowers: ['黃雛菊','白滿天星','玉蝶梅'] },
+      { id: 4, name: '童話花園', rarity: 2, count: 3, flowers: ['黃雛菊','淡粉滿天星','龍游梅'] },
+      { id: 5, name: '楓紅信箋', rarity: 3, count: 3, flowers: ['白雛菊','白滿天星','黑魔術玫瑰'] },
+      { id: 6, name: '貓神的祝福', rarity: 4, count: 3, flowers: ['白雛菊','白滿天星','彩虹幻境玫瑰'] },
+      { id: 7, name: '春日暖陽', rarity: 1, count: 3, flowers: ['黃雛菊','淺藍滿天星','朱砂梅'] },
+      { id: 8, name: '星夜物語', rarity: 2, count: 3, flowers: ['白雛菊','淺藍滿天星','灑金梅'] },
+      { id: 9, name: '銀河漫步', rarity: 2, count: 3, flowers: ['白雛菊','淺藍滿天星','照水梅'] },
+      { id: 10, name: '珍珠雨露', rarity: 3, count: 3, flowers: ['白雛菊','淺藍滿天星','黑魔術玫瑰'] },
+      { id: 11, name: '深夜癡戀', rarity: 4, count: 3, flowers: ['白雛菊','淺藍滿天星','彩虹幻境玫瑰'] },
+      { id: 12, name: '甜蜜時光', rarity: 2, count: 3, flowers: ['白雛菊','胭脂紅滿天星','灑金梅'] },
+      { id: 13, name: '霧中精靈', rarity: 3, count: 3, flowers: ['白雛菊','薰衣紫滿天星','照水梅'] },
+      { id: 14, name: '流螢之光', rarity: 4, count: 3, flowers: ['黃雛菊','薰衣紫滿天星','黑魔術玫瑰'] },
+      { id: 15, name: '紙箱祕境', rarity: 4, count: 3, flowers: ['白雛菊','胭脂紅滿天星','彩虹幻境玫瑰'] },
+      { id: 16, name: '幸運草原', rarity: 3, count: 3, flowers: ['白雛菊','薄荷綠滿天星','龍游梅'] },
+      { id: 17, name: '貓語呢喃', rarity: 4, count: 3, flowers: ['白雛菊','薄荷綠滿天星','黑魔術玫瑰'] },
+      { id: 18, name: '耀雀盛宴', rarity: 5, count: 3, flowers: ['黃雛菊','雙色星斑滿天星','彩虹幻境玫瑰'] },
+      { id: 19, name: '呼嚕小調', rarity: 4, count: 3, flowers: ['白雛菊','曜夜極黑薰衣草','黑魔術玫瑰'] },
+      { id: 20, name: '飛雀散步', rarity: 5, count: 3, flowers: ['白雛菊','曜夜極黑薰衣草','彩虹幻境玫瑰'] },
+      { id: 21, name: '雨後彩虹', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅'] },
+      { id: 22, name: '午後小憩', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','綠萼梅'] },
+      { id: 23, name: '雪吻情書', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','香檳玫瑰'] },
+      { id: 24, name: '晚霞絮語', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','杏桃黃薰衣草','宮粉梅'] },
+      { id: 25, name: '糖霜蛋糕', rarity: 2, count: 4, flowers: ['白雛菊','淡粉滿天星','白雪薰衣草','黑魔術玫瑰'] },
+      { id: 26, name: '薩孔星空', rarity: 3, count: 4, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','璀璨極光百合'] },
+      { id: 27, name: '金色年華', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','微光粉薰衣草','朱砂梅'] },
+      { id: 28, name: '紫醉花香', rarity: 1, count: 4, flowers: ['白雛菊','淺藍滿天星','原生淺紫薰衣草','玉蝶梅'] },
+      { id: 29, name: '祝福鈴聲', rarity: 2, count: 4, flowers: ['白雛菊','白滿天星','甜蜜藍薰衣草','橙黃玫瑰'] },
+      { id: 30, name: '天使羽翼', rarity: 2, count: 4, flowers: ['白雛菊','白滿天星','曜夜極黑薰衣草','綠萼梅'] },
+      { id: 31, name: '逗貓棒狂想', rarity: 3, count: 4, flowers: ['黃雛菊','淺藍滿天星','原生淺紫薰衣草','彩虹幻境玫瑰'] },
+      { id: 32, name: '蜜糖派對', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','雙色斑紋薰衣草','香檳玫瑰'] },
+      { id: 33, name: '奶油雲朵', rarity: 2, count: 4, flowers: ['白雛菊','白滿天星','杏桃黃薰衣草','玉蝶梅'] },
+      { id: 34, name: '肉墊印記', rarity: 3, count: 4, flowers: ['白雛菊','胭脂紅滿天星','原生淺紫薰衣草','黑魔術玫瑰'] },
+      { id: 35, name: '慵懶午後', rarity: 3, count: 4, flowers: ['黃雛菊','白滿天星','英倫深紫薰衣草','璀璨極光百合'] },
+      { id: 36, name: '海風之戀', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','白雪薰衣草','白梅','白玫瑰'] },
+      { id: 37, name: '琥珀之夢', rarity: 1, count: 5, flowers: ['黃雛菊','淡粉滿天星','原生淺紫薰衣草','朱砂梅','紅玫瑰'] },
+      { id: 38, name: '緋色圓舞', rarity: 1, count: 5, flowers: ['白雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅','香水姬百合'] },
+      { id: 39, name: '奶貓搖鈴', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','白雪薰衣草','白梅','橙黃玫瑰'] },
+      { id: 40, name: '虎斑搖籃', rarity: 2, count: 5, flowers: ['黃雛菊','淡粉滿天星','原生淺紫薰衣草','紫葉紅梅','紅玫瑰'] },
+      { id: 41, name: '蝴蝶結禮讚', rarity: 2, count: 5, flowers: ['白雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅','皇家金絲墨鬱金香'] },
+      { id: 42, name: '青空之詩', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','甜蜜藍薰衣草','白梅','粉紅玫瑰'] },
+      { id: 43, name: '玫瑰騎士', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','灑金梅','粉紅玫瑰'] },
+      { id: 44, name: '闖蕩飯匠', rarity: 1, count: 5, flowers: ['黃雛菊','白滿天星','原生淺紫薰衣草','綠萼梅','虎斑雙色百合'] },
+      { id: 45, name: '毛球慶典', rarity: 2, count: 5, flowers: ['白雛菊','白滿天星','微光粉薰衣草','白梅','幽藍幻影百合'] },
+      { id: 46, name: '路路節奏', rarity: 3, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','琥珀冰晶梅','粉紅玫瑰'] },
+      { id: 47, name: '寶石盒子', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','灑金梅','香檳金百合'] },
+      { id: 48, name: '窗台日光浴', rarity: 1, count: 5, flowers: ['黃雛菊','白滿天星','英倫深紫薰衣草','白梅','橙黃玫瑰'] },
+      { id: 49, name: '尾巴圓舞曲', rarity: 2, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','紫葉紅梅','紫玫瑰'] },
+      { id: 50, name: '貓草花田', rarity: 3, count: 5, flowers: ['黃雛菊','白滿天星','原生淺紫薰衣草','玉蝶梅','皇家金絲墨鬱金香'] }
+    ].map(item => ({
+      ...item,
+      completed: defaultCompletedNames.has(item.name)
+    }));
+
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const doneMap = {};
+    bouquets.forEach(item => {
+      const key = String(item.id);
+      doneMap[key] = Object.prototype.hasOwnProperty.call(saved, key)
+        ? !!saved[key]
+        : !!item.completed;
+    });
+
+    const tbody = document.getElementById('tbody');
+    const needBody = document.getElementById('needBody');
+    const totalCount = document.getElementById('totalCount');
+    const doneCountEl = document.getElementById('doneCount');
+    const remainCountEl = document.getElementById('remainCount');
+    const searchInput = document.getElementById('searchInput');
+    let currentFilter = 'all';
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(doneMap));
+    }
+
+    function getFiltered() {
+      const q = searchInput.value.trim().toLowerCase();
+      return bouquets.filter(item => {
+        const matchText = !q || item.name.toLowerCase().includes(q);
+        const matchDone =
+          currentFilter === 'all' ||
+          (currentFilter === 'done' && doneMap[item.id]) ||
+          (currentFilter === 'active' && !doneMap[item.id]);
+        return matchText && matchDone;
+      });
+    }
+
+    function calcNeed() {
+      const needMap = {};
+      let done = 0;
+
+      bouquets.forEach(item => {
+        if (doneMap[item.id]) {
+          done++;
+          return;
+        }
+        item.flowers.forEach(f => {
+          needMap[f] = (needMap[f] || 0) + 1;
+        });
+      });
+
+      return {
+        done,
+        remain: bouquets.length - done,
+        entries: Object.entries(needMap).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'zh-Hant'))
+      };
+    }
+
+    function render() {
+      const filtered = getFiltered();
+      const rows = filtered.map(item => {
+        const done = !!doneMap[item.id];
+        return `
+          <tr class="${done ? 'done-row' : ''}">
+            <td>${item.id}</td>
+            <td>${item.name}</td>
+            <td><span class="badge rarity-${item.rarity}">★ ${item.rarity}</span></td>
+            <td>
+              <div class="flower-tags">${item.flowers.map(f => `<span class="tag">${f}</span>`).join('')}</div>
+            </td>
+            <td>
+              <button class="toggle-btn ${done ? 'done' : ''}" data-id="${item.id}">
+                ${done ? '已完成 ✅' : '未完成 ⏳'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.innerHTML = rows || `<tr><td colspan="5" style="padding:20px; text-align:center;color:var(--muted);">沒有符合條件的花束</td></tr>`;
+
+      document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = Number(btn.dataset.id);
+          doneMap[id] = !doneMap[id];
+          saveState();
+          render();
+        });
+      });
+
+      const { done, remain, entries } = calcNeed();
+      totalCount.textContent = String(bouquets.length);
+      doneCountEl.textContent = String(done);
+      remainCountEl.textContent = String(remain);
+
+      if (entries.length === 0) {
+        needBody.innerHTML = `<tr><td colspan="2" class="empty">全部完成！</td></tr>`;
+      } else {
+        needBody.innerHTML = entries.map(([name, count]) => `
+          <tr>
+            <td>${name}</td>
+            <td>${count}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    searchInput.addEventListener('input', render);
+
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentFilter = btn.dataset.filter;
+        document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('ghost'));
+        document.querySelectorAll('[data-filter]').forEach(b => {
+          if (b.dataset.filter !== currentFilter) b.classList.add('ghost');
+        });
+        render();
+      });
+    });
+
+    render();
   </script>
 </body>
 </html>
