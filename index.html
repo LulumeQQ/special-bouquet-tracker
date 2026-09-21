@@ -276,6 +276,7 @@
     function loadState() {
       try {
         const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        // Keep defaults as first-run values, but preserve user toggles from localStorage on later visits.
         return { ...buildDefaultState(), ...parsed };
       } catch (error) {
         return buildDefaultState();
@@ -340,9 +341,6 @@
       }).join('');
 
       bouquetBody.innerHTML = rows || '<tr><td colspan="8" class="muted">沒有符合條件的花束</td></tr>';
-      document.querySelectorAll('.toggle-btn').forEach((btn) => {
-        btn.addEventListener('click', () => toggleDone(Number(btn.dataset.id)));
-      });
     }
 
     function renderNeedSummary() {
@@ -390,6 +388,12 @@
     statusFilter.addEventListener('change', (event) => {
       filterStatus = event.target.value;
       renderTable();
+    });
+
+    bouquetBody.addEventListener('click', (event) => {
+      const button = event.target.closest('.toggle-btn');
+      if (!button) return;
+      toggleDone(Number(button.dataset.id));
     });
 
     resetBtn.addEventListener('click', () => {
