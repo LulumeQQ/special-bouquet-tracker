@@ -204,6 +204,10 @@
     const STORAGE_KEY = 'special-bouquet-tracker.completed.v1';
     const DEFAULT_COMPLETED_IDS = [39, 40];
 
+    function keyOf(id) {
+      return String(id);
+    }
+
     const BOUQUETS = [
       { id: 1, name: '晨曦花語', rarity: 1, price: 130, count: 3, flower1: '白雛菊', flower2: '白滿天星', flower3: '白滿天星', flower4: '', flower5: '', description: '晨光灑下來好溫柔' },
       { id: 2, name: '月下私語', rarity: 1, price: 130, count: 3, flower1: '白雛菊', flower2: '白滿天星', flower3: '綠萼梅', flower4: '', flower5: '', description: '月色下最適合說秘密' },
@@ -273,15 +277,16 @@
 
     function buildDefaultState() {
       const base = {};
-      DEFAULT_COMPLETED_IDS.forEach((id) => { base[id] = true; });
+      DEFAULT_COMPLETED_IDS.forEach((id) => { base[keyOf(id)] = true; });
       return base;
     }
 
     function loadState() {
       try {
         const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        const validParsed = (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) ? parsed : {};
         // Keep defaults as first-run values, but preserve user toggles from localStorage on later visits.
-        return { ...buildDefaultState(), ...parsed };
+        return { ...buildDefaultState(), ...validParsed };
       } catch (error) {
         return buildDefaultState();
       }
@@ -308,7 +313,7 @@
 
     function filteredBouquets() {
       return BOUQUETS.filter((b) => {
-        const done = !!completedMap[b.id];
+        const done = !!completedMap[keyOf(b.id)];
         if (filterStatus === 'completed' && !done) return false;
         if (filterStatus === 'incomplete' && done) return false;
         if (!keyword) return true;
@@ -317,14 +322,14 @@
     }
 
     function toggleDone(id) {
-      completedMap[id] = !completedMap[id];
+      completedMap[keyOf(id)] = !completedMap[keyOf(id)];
       saveState();
       render();
     }
 
     function renderTable() {
       const rows = filteredBouquets().map((b) => {
-        const done = !!completedMap[b.id];
+        const done = !!completedMap[keyOf(b.id)];
         const flowers = flowersOf(b).map((f) => `<span class="chip">${escapeHtml(f)}</span>`).join('');
         return `
           <tr class="${done ? 'row-done' : ''}">
@@ -352,7 +357,7 @@
       let completedCount = 0;
 
       BOUQUETS.forEach((b) => {
-        if (completedMap[b.id]) {
+        if (completedMap[keyOf(b.id)]) {
           completedCount += 1;
           return;
         }
