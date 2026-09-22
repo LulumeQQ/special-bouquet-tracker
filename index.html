@@ -6,9 +6,7 @@
   <title>特殊花束配方管理</title>
   <style>
     :root{--bg:#0c1220;--bg2:#121a2a;--panel:#1a2335;--line:#2c3a50;--text:#edf3ff;--muted:#a9b8d2;--green:#38d39f;--amber:#f6c453;--red:#ff6b6b;--shadow:0 18px 40px rgba(0,0,0,0.22)}
-    *{box-sizing:border-box} html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif}
-    .container{max-width:1440px;margin:24px auto;padding:0 18px 28px}.header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.title-wrap h1{margin:0;font-size:2rem;letter-spacing:1px}.subtitle{margin-top:8px;color:var(--muted);font-size:.92rem}.badge-mini{display:inline-block;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:999px;padding:8px 14px;color:var(--muted);font-size:.8rem}.layout{display:grid;grid-template-columns:1.45fr .95fr;gap:18px;align-items:stretch}.panel{background:rgba(26,35,53,.96);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;height:100%}.panel-header{padding:16px 18px 12px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:16px 18px 0}input[type="text"]{flex:1;min-width:220px;height:42px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:#0f1727;color:var(--text);font-size:14px;outline:none}.filter-group{display:flex;gap:8px;flex-wrap:wrap}button{background:#23314a;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:600;transition:.15s ease}button:hover{filter:brightness(1.08);transform:translateY(-1px)}.ghost{background:transparent}.table-wrap{flex:1;min-height:0;overflow:auto;padding:0 0 8px}.table-wrap table{width:100%;border-collapse:collapse}th,td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;font-size:13px}th{position:sticky;top:0;background:#1a2335;z-index:2;color:#e7edf9}.done-row{opacity:.64}.badge{display:inline-block;min-width:56px;text-align:center;border-radius:999px;padding:5px 9px;font-weight:700;letter-spacing:.5px;border:1px solid rgba(255,255,255,.1);font-size:12px}.rarity-1{background:#e5e7eb;color:#111827}.rarity-2{background:#93c5fd;color:#0f172a}.rarity-3{background:#86efac;color:#052e16}.rarity-4{background:#fcd34d;color:#1f2937}.rarity-5{background:#fda4af;color:#3f0d12}.flower-tags{display:flex;flex-wrap:wrap;gap:6px}.tag{display:inline-block;background:#0d1726;border:1px solid var(--line);color:var(--text);border-radius:999px;font-size:11px;padding:4px 8px;white-space:nowrap}.toggle-btn{width:100%;min-width:92px;background:#23314a;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-weight:700}.toggle-btn.done{background:#1f6f4a;border-color:#2cc77a;color:#dffef1}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 16px 0;flex:0 0 auto}.stat{background:#101a2a;border:1px solid var(--line);border-radius:12px;padding:12px 10px}.stat-label{color:var(--muted);font-size:12px;margin-bottom:8px}.stat-value{font-size:1.8rem;font-weight:700}.green{color:var(--green)}.amber{color:var(--amber)}.need-panel{padding:14px 16px 16px;flex:1;min-height:0;display:flex;flex-direction:column}.need-nav{display:flex;gap:8px;flex-wrap:wrap;padding:8px 0 12px;margin:0 -2px}.need-chip{background:#0f1727;border:1px solid var(--line);color:var(--text);padding:7px 10px;border-radius:999px;font-size:12px;flex:0 0 auto}.need-chip:hover{filter:brightness(1.08)}.need-chip.active{background:var(--amber);color:var(--bg);border-color:var(--amber)}.need-table{margin-top:0;background:#0f1727;border:1px solid var(--line);border-radius:12px;overflow:auto;flex:1;min-height:0;padding:8px}.need-category{margin-bottom:14px}.need-category-title{font-weight:700;color:var(--amber);padding:8px 10px;background:rgba(255,255,255,.05);border-radius:6px;margin-bottom:6px;font-size:12px}.need-category-items{display:flex;flex-direction:column;gap:4px}.need-item{display:flex;justify-content:space-between;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px}.need-item:last-child{border-bottom:none}.need-item-name{flex:1}.need-item-count{text-align:right;color:var(--green);font-weight:700;min-width:40px}.empty{text-align:center;color:var(--green);padding:14px 10px;font-weight:700}@media (max-width:980px){.layout{grid-template-columns:1fr}.table-wrap{max-height:60vh}}@media (max-width:430px){.container{padding:0 8px 18px;margin:12px auto}.header{margin-bottom:12px}.title-wrap h1{font-size:1.5rem}.subtitle{margin-top:6px;font-size:.72rem}.badge-mini{font-size:.66rem;padding:6px 10px}.layout{grid-template-columns:1fr;gap:12px}.panel{border-radius:14px}.panel-header{padding:12px 12px 10px}.toolbar{padding:12px 10px 0;gap:8px}.input[type="text"]{min-width:0;height:38px;font-size:13px}.filter-group{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.filter-group button{width:100%;padding:8px 6px;font-size:12px}.table-wrap{overflow-y:auto;max-height:50vh}.table-wrap table{width:100%;min-width:0;border-collapse:separate;border-spacing:0}.table-wrap thead{display:none}.table-wrap tbody tr{display:block;border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:8px 8px 6px;background:#101a2a}.table-wrap tbody td{display:block;width:100%;padding:4px 0;border:none}.table-wrap tbody td:before{content:attr(data-label);display:inline-block;width:58px;color:var(--muted);font-size:11px;vertical-align:top}.table-wrap tbody td:nth-child(1):before{content:"";width:0}.table-wrap tbody td:nth-child(1){font-weight:700;margin-bottom:2px}.table-wrap tbody td:nth-child(2){font-size:13px;margin-bottom:4px}.table-wrap tbody td:nth-child(3),.table-wrap tbody td:nth-child(4),.table-wrap tbody td:nth-child(5){padding-top:6px}.badge{min-width:40px;padding:4px 7px;font-size:10px}.flower-tags{gap:4px}.tag{font-size:10px;padding:3px 6px}.toggle-btn{min-width:0;padding:7px 8px;font-size:12px}.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:12px 8px 0}.stat{padding:9px 4px}.stat-label{font-size:10px;margin-bottom:6px}.stat-value{font-size:1.15rem}.need-panel{padding:12px 8px 12px}.need-nav{position:sticky;top:0;z-index:5;background:rgba(26,35,53,.96);margin:-2px 0 8px;padding:8px 0;border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap;scrollbar-width:none}.need-nav::-webkit-scrollbar{display:none}.need-chip{padding:6px 9px;font-size:11px}.need-table{padding:6px}.need-category{margin-bottom:10px}.need-category-title{padding:6px 8px;font-size:11px}.need-item{padding:6px 8px;font-size:11px}.need-item-count{min-width:34px}} 
-  </style>
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif} body{min-height:100vh}.container{max-width:1440px;margin:24px auto;padding:0 18px 28px}.header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.title-wrap h1{margin:0;font-size:clamp(1.6rem,2vw,2.4rem)}.subtitle{margin-top:6px;color:var(--muted);font-size:0.95rem}.badge-mini{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,0.03);color:var(--muted);font-size:0.8rem}.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(350px,0.9fr);gap:18px}.panel{background:rgba(26,35,53,0.96);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}.panel-header{padding:14px 18px;border-bottom:1px solid var(--line);font-size:1.05rem;background:rgba(255,255,255,0.02)}.toolbar{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.toolbar input{flex:1;min-width:220px;background:#0f1829;border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:12px;outline:none}.toolbar input::placeholder{color:#7e8ea9}.filter-group{display:flex;gap:8px;flex-wrap:wrap}.filter-group button,.need-chip,.toggle-btn{border-radius:10px;border:1px solid var(--line);background:#111b2b;color:var(--text);padding:8px 14px;cursor:pointer;transition:.18s ease}.filter-group button.ghost,.need-chip{background:transparent}.filter-group button:hover,.need-chip:hover,.toggle-btn:hover{border-color:#4b5f82}.filter-group button.active,.need-chip.active,.toggle-btn.done{background:rgba(56,211,159,0.14);border-color:rgba(56,211,159,0.5);color:#bff7de}.table-wrap{overflow:auto}.table-wrap table{width:100%;border-collapse:collapse;min-width:820px}.table-wrap th,.table-wrap td{padding:12px 10px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;text-align:left}.table-wrap th{color:var(--muted);font-weight:700;font-size:0.9rem;position:sticky;top:0;background:#1a2335;z-index:1}.flower-tags{display:flex;flex-wrap:wrap;gap:6px}.tag{display:inline-flex;align-items:center;justify-content:center;padding:5px 8px;background:#101a29;border:1px solid var(--line);border-radius:999px;font-size:0.78rem;color:var(--text)}.badge{display:inline-block;padding:5px 8px;border-radius:999px;font-weight:700;font-size:0.8rem}.rarity-1{background:rgba(99,139,255,0.14);color:#a8c1ff}.rarity-2{background:rgba(77,217,174,0.14);color:#b3f3d5}.rarity-3{background:rgba(246,196,83,0.14);color:#f9d981}.rarity-4{background:rgba(242,132,98,0.18);color:#ffbca0}.rarity-5{background:rgba(202,94,255,0.12);color:#e3b7ff}.done-row{background:rgba(56,211,159,0.03)}.toggle-btn{min-width:68px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:18px 18px 0;gap:12px}.stat{background:#111b2b;border:1px solid var(--line);border-radius:14px;padding:14px 12px}.stat-label{font-size:0.8rem;color:var(--muted);margin-bottom:8px}.stat-value{font-size:1.7rem;font-weight:800}.green{color:var(--green)}.amber{color:var(--amber)}.need-panel{padding:18px}.need-panel strong{display:block;margin-bottom:12px}.need-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.need-category{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:#0f1829}.need-category-title{padding:10px 12px;border-bottom:1px solid var(--line);color:var(--muted);font-weight:700}.need-category-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px 12px}.need-item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#101b2b;border:1px solid rgba(255,255,255,0.04);border-radius:10px;padding:8px 10px}.need-item-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.need-item-count{font-weight:800;color:var(--amber)}.empty{height:100%;display:flex;align-items:center;justify-content:center;padding:18px;color:var(--muted)}@media (max-width:980px){.layout{grid-template-columns:1fr}.need-category-items{grid-template-columns:1fr}}@media (max-width:560px){.stats{grid-template-columns:1fr}.toolbar{align-items:stretch}.toolbar input,.filter-group{width:100%}.filter-group{justify-content:flex-start}}  </style>
 </head>
 <body>
   <div class="container">
@@ -26,7 +24,7 @@
         <div class="toolbar">
           <input id="searchInput" type="text" placeholder="搜尋花束名稱，例如：虎斑搖籃" />
           <div class="filter-group">
-            <button data-filter="all">全部</button>
+            <button data-filter="all" class="active">全部</button>
             <button data-filter="active" class="ghost">未完成</button>
             <button data-filter="done" class="ghost">已完成</button>
           </div>
@@ -65,7 +63,7 @@
   <script>
     const STORAGE_KEY = 'special-bouquet-tracker-v2';
     const defaultCompletedNames = new Set([
-      '晨曦花語','月下私語','童話花園','春日暖陽','星夜物語','銀河漫步','甜蜜時光','幸運草原','雨後彩虹','午後小憩','雪國情書','金色年華','祝福鈴聲','天使羽翼','海風之戀','琥珀之夢','緋色圓舞','奶貓搖鈴','虎斑搖籃'
+      '晨曦花語','月下私語','童話花園','春日暖陽','星夜物語','銀河漫步','甜蜜時光','幸運草原','雨後彩虹','午後小憩','雪國情書','金色年華','祝福鈴聲','天使羽翼','貓草花田','瑰麗蝶舞','柔情曙光','青空之詩'
     ]);
 
     const bouquets = [
@@ -75,26 +73,26 @@
       { id: 4, name: '童話花園', rarity: 2, count: 3, flowers: ['黃雛菊','淡粉滿天星','龍游梅'] },
       { id: 5, name: '楓紅信箋', rarity: 3, count: 3, flowers: ['白雛菊','白滿天星','黑魔術玫瑰'] },
       { id: 6, name: '貓神的祝福', rarity: 4, count: 3, flowers: ['白雛菊','白滿天星','彩虹幻境玫瑰'] },
-      { id: 7, name: '春日暖陽', rarity: 1, count: 3, flowers: ['黃雛菊','淺藍滿天星','朱砂梅'] },
+      { id: 7, name: '春日暖陽', rarity: 1, count: 3, flowers: ['黃雛菊','鵝黃滿天星','朱砂梅'] },
       { id: 8, name: '星夜物語', rarity: 2, count: 3, flowers: ['白雛菊','淺藍滿天星','灑金梅'] },
       { id: 9, name: '銀河漫步', rarity: 2, count: 3, flowers: ['白雛菊','淺藍滿天星','照水梅'] },
       { id: 10, name: '珍珠雨露', rarity: 3, count: 3, flowers: ['白雛菊','淺藍滿天星','黑魔術玫瑰'] },
-      { id: 11, name: '深夜癡戀', rarity: 4, count: 3, flowers: ['白雛菊','淺藍滿天星','彩虹幻境玫瑰'] },
+      { id: 11, name: '深夜獵貓', rarity: 4, count: 3, flowers: ['白雛菊','淺藍滿天星','彩虹幻境玫瑰'] },
       { id: 12, name: '甜蜜時光', rarity: 2, count: 3, flowers: ['白雛菊','胭脂紅滿天星','灑金梅'] },
       { id: 13, name: '霧中精靈', rarity: 3, count: 3, flowers: ['白雛菊','薰衣紫滿天星','照水梅'] },
       { id: 14, name: '流螢之光', rarity: 4, count: 3, flowers: ['黃雛菊','薰衣紫滿天星','黑魔術玫瑰'] },
       { id: 15, name: '紙箱祕境', rarity: 4, count: 3, flowers: ['白雛菊','胭脂紅滿天星','彩虹幻境玫瑰'] },
       { id: 16, name: '幸運草原', rarity: 3, count: 3, flowers: ['白雛菊','薄荷綠滿天星','龍游梅'] },
       { id: 17, name: '貓語呢喃', rarity: 4, count: 3, flowers: ['白雛菊','薄荷綠滿天星','黑魔術玫瑰'] },
-      { id: 18, name: '耀雀盛宴', rarity: 5, count: 3, flowers: ['黃雛菊','雙色星斑滿天星','彩虹幻境玫瑰'] },
+      { id: 18, name: '罐罐盛宴', rarity: 5, count: 3, flowers: ['黃雛菊','雙色星斑滿天星','彩虹幻境玫瑰'] },
       { id: 19, name: '呼嚕小調', rarity: 4, count: 3, flowers: ['白雛菊','曜夜極黑薰衣草','黑魔術玫瑰'] },
-      { id: 20, name: '飛雀散步', rarity: 5, count: 3, flowers: ['白雛菊','曜夜極黑薰衣草','彩虹幻境玫瑰'] },
+      { id: 20, name: '飛簷散步', rarity: 5, count: 3, flowers: ['白雛菊','曜夜極黑薰衣草','彩虹幻境玫瑰'] },
       { id: 21, name: '雨後彩虹', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅'] },
       { id: 22, name: '午後小憩', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','綠萼梅'] },
       { id: 23, name: '雪國情書', rarity: 1, count: 4, flowers: ['白雛菊','白滿天星','白雪薰衣草','香檳玫瑰'] },
       { id: 24, name: '晚霞絮語', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','杏桃黃薰衣草','宮粉梅'] },
       { id: 25, name: '糖霜蛋糕', rarity: 2, count: 4, flowers: ['白雛菊','淡粉滿天星','白雪薰衣草','黑魔術玫瑰'] },
-      { id: 26, name: '薩孔星空', rarity: 3, count: 4, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','璀璨極光百合'] },
+      { id: 26, name: '瞳孔星空', rarity: 3, count: 4, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','璀璨極光百合'] },
       { id: 27, name: '金色年華', rarity: 1, count: 4, flowers: ['黃雛菊','淡粉滿天星','微光粉薰衣草','朱砂梅'] },
       { id: 28, name: '紫醉花香', rarity: 1, count: 4, flowers: ['白雛菊','淺藍滿天星','原生淺紫薰衣草','玉蝶梅'] },
       { id: 29, name: '祝福鈴聲', rarity: 2, count: 4, flowers: ['白雛菊','白滿天星','甜蜜藍薰衣草','橙黃玫瑰'] },
@@ -112,9 +110,9 @@
       { id: 41, name: '蝴蝶結禮讚', rarity: 2, count: 5, flowers: ['白雛菊','淡粉滿天星','原生淺紫薰衣草','宮粉梅','皇家金絲墨鬱金香'] },
       { id: 42, name: '青空之詩', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','甜蜜藍薰衣草','白梅','粉紅玫瑰'] },
       { id: 43, name: '玫瑰騎士', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','灑金梅','粉紅玫瑰'] },
-      { id: 44, name: '闖蕩飯匠', rarity: 1, count: 5, flowers: ['黃雛菊','白滿天星','原生淺紫薰衣草','綠萼梅','虎斑雙色百合'] },
+      { id: 44, name: '鬍鬚微風', rarity: 1, count: 5, flowers: ['黃雛菊','白滿天星','原生淺紫薰衣草','綠萼梅','虎斑雙色百合'] },
       { id: 45, name: '毛球慶典', rarity: 2, count: 5, flowers: ['白雛菊','白滿天星','微光粉薰衣草','白梅','幽藍幻影百合'] },
-      { id: 46, name: '路路節奏', rarity: 3, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','琥珀冰晶梅','粉紅玫瑰'] },
+      { id: 46, name: '踏踏節奏', rarity: 3, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','琥珀冰晶梅','粉紅玫瑰'] },
       { id: 47, name: '寶石盒子', rarity: 1, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','灑金梅','香檳金百合'] },
       { id: 48, name: '窗台日光浴', rarity: 1, count: 5, flowers: ['黃雛菊','白滿天星','英倫深紫薰衣草','白梅','橙黃玫瑰'] },
       { id: 49, name: '尾巴圓舞曲', rarity: 2, count: 5, flowers: ['白雛菊','白滿天星','原生淺紫薰衣草','紫葉紅梅','紫玫瑰'] },
@@ -233,6 +231,10 @@
         document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('ghost'));
         document.querySelectorAll('[data-filter]').forEach(b => {
           if (b.dataset.filter !== currentFilter) b.classList.add('ghost');
+        });
+        document.querySelectorAll('[data-filter]').forEach(b => {
+          if (b.dataset.filter === currentFilter) b.classList.add('active');
+          else b.classList.remove('active');
         });
         render();
       });
